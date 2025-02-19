@@ -1,0 +1,4 @@
+"C:\Program Files (x86)\CLion 2021.2.2\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - MinGW Makefiles" "C:\Users\leoda\OneDrive\Documenti\Applicazione fai da te\LabProgrammazione\TodoList"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/leoda/OneDrive/Documenti/Applicazione fai da te/LabProgrammazione/TodoList/cmake-build-debug

@@ -39,7 +39,7 @@ void TodoList::removeTask(int index) {
 }
 
 Task TodoList::getTask(int index) {
-    if (index < 0 || index >= _list.size()) {
+    if (_list.empty() || index < 0 || index >= _list.size()) {
         throw out_of_range("Index out of range on getTask()");
     }
     return _list[index];
@@ -69,7 +69,7 @@ void TodoList::saveTasks(const string &filepath) const {
         throw out_of_range("Impossible to open the file on loadTask()");
     }
     for (const auto &task: _list) {
-        file << task.getDescription() << ";" << task.getIsCompleted();
+        file << task.getDescription() << ";" << task.getIsCompleted() << "\n";
     }
     file.close();
 }

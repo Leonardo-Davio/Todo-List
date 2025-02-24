@@ -26,6 +26,8 @@ public:
     void removeTask(int index);     //Index value is from the user input
     Task getTask(int index);
 
+    //Method for take all the Task for display
+    const vector<Task> &getList();
 
     //Methods to save Tasks to disk or unload them from disk to the _list vector
     //TODO Handle exceptions well with the GUI class

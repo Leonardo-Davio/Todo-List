@@ -73,3 +73,7 @@ void TodoList::saveTasks(const string &filepath) const {
     }
     file.close();
 }
+
+const vector<Task> &TodoList::getList() {
+    return _list;
+}

@@ -182,3 +182,32 @@ TEST(TodoListTest, ConstructorInitialization) {
     ASSERT_EQ(todoList.getTask(3).getDescription(), "Initial Task 2");
     ASSERT_TRUE(todoList.getTask(3).getIsCompleted());
 }
+
+// Test per getList metodo quando la lista è vuota
+TEST(TodoListTest, GetList_Empty) {
+    // Crea una lista TodoList vuota
+    std::string filepath = "tasksTest.txt";
+    std::vector<Task> initialTasks;
+    TodoList todoList(initialTasks, filepath);
+
+    // Prendi la lista delle attività e verifica che sia vuota
+    const std::vector<Task>& taskList = todoList.getList();
+    EXPECT_TRUE(taskList.empty());
+}
+
+// Test per getList metodo quando la lista contiene elementi
+TEST(TodoListTest, GetList_WithItems) {
+    // Crea una lista TodoList e aggiungi elementi
+    std::string filepath = "tasksTest.txt";
+    std::vector<Task> initialTasks;
+    TodoList todoList(initialTasks, filepath);
+
+    todoList.addTask("task1");
+    todoList.addTask("task2");
+
+    // Prendi la lista delle attività e verifica che contenga gli elementi aggiunti
+    const std::vector<Task>& taskList = todoList.getList();
+    EXPECT_EQ(taskList.size(), 2);
+    EXPECT_EQ(taskList[0].getDescription(), "task1");
+    EXPECT_EQ(taskList[1].getDescription(), "task2");
+}

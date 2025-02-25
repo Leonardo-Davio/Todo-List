@@ -75,11 +75,11 @@ void TodoList::loadTasks(const string &filepath) {
 }
 
 void TodoList::saveTasks(const string &filepath) const {
-    ofstream file(filepath, ios::app);
+    ofstream file(filepath);
     if (!file.is_open()){
         throw out_of_range("Impossible to open the file on loadTask()");
     }
-    file.clear();   // Clear the file for the new save of the todolist
+    file << "";   // Clear the file for the new save of the todolist
     for (const auto &task: _list) {
         file << task.getDescription() << ";" << task.getIsCompleted() << "\n";
     }

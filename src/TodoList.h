@@ -30,7 +30,6 @@ public:
     const vector<Task> &getList();
 
     //Methods to save Tasks to disk or unload them from disk to the _list vector
-    //TODO Handle exceptions well with the GUI class
     void loadTasks(const string &filepath);
     void saveTasks(const string &filepath) const;
 };

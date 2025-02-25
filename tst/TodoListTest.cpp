@@ -6,7 +6,7 @@
 #include <fstream>
 
 
-// Test loading tasks from file
+// Test loading tasks from file not empty
 TEST(TodoListTest, LoadTasks) {
     // Setup: create a temporary file with tasks
     std::ofstream file("tasksTest.txt");
@@ -26,6 +26,38 @@ TEST(TodoListTest, LoadTasks) {
     ASSERT_TRUE(todoList.getTask(0).getIsCompleted());
     ASSERT_EQ(todoList.getTask(1).getDescription(), "Task 2");
     ASSERT_FALSE(todoList.getTask(1).getIsCompleted());
+}
+// Test loading tasks from not correct file input
+TEST(TodoListTest, LoadTasks_FileNotFoundInConstructor) {
+    // Initialise
+    std::stringstream buffer;
+    std::streambuf* old = std::cerr.rdbuf(buffer.rdbuf());
+    std::vector<Task> initialTasks;
+    std::string filepath = "non_existing_file.txt";
+    TodoList todoList(initialTasks, filepath);
+
+    // Catch the error output from the loadfile method
+    std::cerr.rdbuf(old);
+    std::string output = buffer.str();
+
+    // Chek if the output is correct
+    std::string expected_error_message = "Errore: impossibile aprire il file " + filepath + "\n";
+    EXPECT_EQ(output, expected_error_message);
+}
+// Test loading tasks from an empty file
+TEST(TodoListTest, LoadTasks_EmptyFile) {
+    // Setup: create an empty temporary file and initialise
+    std::ofstream file("emptyTasksTest.txt");
+    file.close();
+    std::vector<Task> initialTasks;
+    std::string filepath = "emptyTasksTest.txt";
+    TodoList todoList(initialTasks, filepath);
+
+    // Load tasks from the empty file
+    todoList.loadTasks(filepath);
+
+    // Verify that no tasks are loaded
+    ASSERT_TRUE(todoList.getList().empty());
 }
 
 // Test saving tasks to file
@@ -52,7 +84,6 @@ TEST(TodoListTest, SaveTasks) {
     ASSERT_EQ(line, "Task 2;0");
     file.close();
 }
-
 
 // Test removing tasks
 TEST(TodoListTest, RemoveTask) {

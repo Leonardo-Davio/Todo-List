@@ -48,9 +48,20 @@ Task TodoList::getTask(int index) {
 //Methods to save Tasks to disk or unload them from disk to the _list vector
 void TodoList::loadTasks(const string &filepath) {
     ifstream file(filepath);
-    if (!file.is_open()){
-        throw out_of_range("Impossible to open the file on loadTask()");
+    // Check if the file exist
+    if (!file) {
+        cerr << "Errore: impossibile aprire il file " << filepath << endl;
+        return;
     }
+    // Check if the file is empty
+    file.seekg(0, ios::end);
+    if (file.tellg() == 0) {
+        cout << "-- Non ci sono compiti salvati sul disco --\n";
+        file.close();
+        return;
+    }
+    // Return the pointer to the origin and upload the task saved.
+    file.seekg(0, ios::beg);
     string line;
     while (getline(file, line)) {
         istringstream iss(line);
@@ -64,10 +75,11 @@ void TodoList::loadTasks(const string &filepath) {
 }
 
 void TodoList::saveTasks(const string &filepath) const {
-    ofstream file(filepath);
+    ofstream file(filepath, ios::app);
     if (!file.is_open()){
         throw out_of_range("Impossible to open the file on loadTask()");
     }
+    file.clear();   // Clear the file for the new save of the todolist
     for (const auto &task: _list) {
         file << task.getDescription() << ";" << task.getIsCompleted() << "\n";
     }

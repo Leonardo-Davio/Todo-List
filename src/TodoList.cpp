@@ -77,7 +77,7 @@ void TodoList::loadTasks(const string &filepath) {
 void TodoList::saveTasks(const string &filepath) const {
     ofstream file(filepath);
     if (!file.is_open()){
-        throw out_of_range("Impossible to open the file on loadTask()");
+        throw out_of_range("Impossible to open the file on saveTask()");
     }
     file << "";   // Clear the file for the new save of the todolist
     for (const auto &task: _list) {

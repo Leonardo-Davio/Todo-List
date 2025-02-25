@@ -17,6 +17,8 @@ public:
     static void addTaskDisplay(TodoList &list);
     static void removeTaskDisplay(TodoList &list);
     static void completeTaskDisplay(TodoList &list);
+
+    static void exitProgram(TodoList &list, string &path);
 };
 
 

@@ -11,7 +11,7 @@ int Gui::menuDisplay() {
     int num;
     cout << "\n---- Menu Todo List ----";
     cout << "\n1. Mostra lista\n2. Aggiungi compito\n3. Compito comletato\n4. Rimuovi compito\n5. Uscita dal programma";
-    cout << "\nScegliere l'operazione: ";
+    cout << "\nScegliere l'operazione:";
     cin >> num;
     // Check if the num is correct if not call again the function
     if (num < 1 || num > 5 || cin.fail()){
@@ -28,16 +28,19 @@ void Gui::tasksDisplay(TodoList &list) {
     // Initialise the local variable
     const vector <Task>& tasks = list.getList();
     int num = 1;
-    wchar_t checkMark = L'\u2713', circle = L'\u25CB';//Use the unicode for custom symbol if the user do or not the task
 
     // Display in the terminal
     cout << "\n----- Compiti da fare -----\n";
+    if (tasks.empty()){
+        cout << "La lista e' vuota.\n";
+        return;
+    }
     for(const auto &task: tasks){
-        cout << num << " | ";
+        cout << num << " |";
         if (task.getIsCompleted()) { //Check if the task is completed or not
-            cout << checkMark << " | ";
+            cout << "  Fatto  | ";
         }else{
-            cout << circle << " | ";
+            cout << " Da fare | ";
         }
         cout << task.getDescription() << "\n";
         num++;  // Update the index
@@ -85,8 +88,8 @@ void Gui::removeTaskDisplay(TodoList &list) {
     index--;   //The value taken from user start with 1, the list start with 0
     try {   //Try that index value is correct to remove the task
         Task task = list.getTask(index);
-        cout << "\nStai eliminando il compito: " <<task.getDescription();
-        cout << "\n[Y|N]";
+        cout << "\nStai eliminando il compito: \"" <<task.getDescription();
+        cout << "\"\n[Y|N]->";
         cin >> check;   // Confirm the remove the task
         if( check == "Y"|| check == "y"){
             list.removeTask(index);
@@ -106,7 +109,7 @@ void Gui::completeTaskDisplay(TodoList &list) {
     bool status;
     //Display for set the task is completed
     cout << "\n----- Compito completato -----\n";
-    cout << "Inserisci il numero del compito da segnare come completato | da fare: ";
+    cout << "Inserisci il numero del compito da segnare come completato/da fare: ";
     cin >> index;
     index--;
 
@@ -120,16 +123,16 @@ void Gui::completeTaskDisplay(TodoList &list) {
             cout << " lo hai completato.";
         }
         // Display the confirm of the operation
-        cout << "\nConfermi l'operazione: [Y|N] : ";
+        cout << "\nConfermi l'operazione\n[Y|N] -> ";
         cin >> check;
         if( check == "Y"|| check == "y"){
             cout << "\n--Il compito e' ";
             if (status){
                 status = false;
-                cout << "da completare.";
+                cout << "da completare.\n";
             }else{
                 status = true;
-                cout << "completato.";
+                cout << "completato.\n";
             }
             list.setCompleteTask(index, status);
         } else{
@@ -138,5 +141,16 @@ void Gui::completeTaskDisplay(TodoList &list) {
     } catch (const std::out_of_range& e) {  // Error lunch if the value is not well define.
         cout << "\nIl numero inserito non e' nella lista!\n";
     }
+}
+
+void Gui::exitProgram(TodoList &list, string &path) {
+    cout << "\nSalvataggio delle task sul file: " << path;
+    try{
+        list.saveTasks(path);
+        cout << "\nSalvataggio effettuato. Chiusura del programma, arrivederci.";
+    } catch (const out_of_range &e){
+        cout << "\nERROR on save: the filepath is null or not defined.\nThe program is closing anyway.";
+    }
+
 }
 

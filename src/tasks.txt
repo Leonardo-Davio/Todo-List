@@ -1,0 +1,3 @@
+Andare a compreare il pane;0
+Fare un po' di palestra;1
+Pulire il soggiorno;1

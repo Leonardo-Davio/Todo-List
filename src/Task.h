@@ -10,28 +10,28 @@ using namespace std;
 
 class Task {
 private:
-    string _description;    //Description of the task
-    bool _isCompleted;      //Need for check if the task is completed, but to not eliminate the task
+    string description;    //Description of the task
+    bool isCompleted;      //Need for check if the task is completed, but to not eliminate the task
 
 public:
     //Builder
     explicit Task(string description, bool completed = false):
-            _description(move(description)), _isCompleted(completed) {};
+            description(move(description)), isCompleted(completed) {};
 
-    //Getter & setter of _description
+    //Getter & setter of description
     const string &getDescription() const {
-        return _description;
+        return description;
     };
-    void setDescription(const string &description) {
-        _description = description;
+    void setDescription(const string &desc) {
+        description = desc;
     }
 
-    //Getter & setter of _isCompleted
+    //Getter & setter of isCompleted
     bool getIsCompleted() const {
-        return _isCompleted;
+        return isCompleted;
     }
-    void setIsCompleted(bool isCompleted) {
-        _isCompleted = isCompleted;
+    void setIsCompleted(bool isComplete) {
+        isCompleted = isComplete;
     }
 };
 

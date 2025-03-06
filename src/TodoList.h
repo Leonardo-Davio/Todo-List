@@ -25,6 +25,9 @@ public:
     // Add a task in the vector of list
     void addTask(Task &task);
 
+    // Clear the list
+    void clearList();
+
     // Get and remove task by index
     Task &getTask(size_t index);
     bool removeTask(int index);

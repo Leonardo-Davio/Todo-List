@@ -13,6 +13,27 @@ TEST(TodoListTest, AddTask) {
     ASSERT_EQ(todoList.taskCount(), 1);
 }
 
+// Test function for clearList
+TEST(TodoListTest, ClearList) {
+    // Init a list
+    TodoList todoList("");
+    Task task("Task 1");
+    Task task2("Task 2");
+    Task task3("Task 3");
+    todoList.addTask(task);
+    todoList.addTask(task2);
+    todoList.addTask(task3);
+
+    // Chek if not empty
+    EXPECT_EQ(todoList.taskCount(), 3);
+
+    // Call the clearList method
+    todoList.clearList();
+
+    // Check if empty after the call clearList
+    EXPECT_EQ(todoList.taskCount(), 0);
+}
+
 // Get and delete by index
 // Test for getTask function
 TEST(TodoListTest, GetTask) {

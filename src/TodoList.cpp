@@ -132,3 +132,7 @@ vector<string> TodoList::searchTaskByPartialDescription(const string &desc) cons
     }
     return matchDesc;
 }
+
+void TodoList::clearList() {
+    list.clear();
+}

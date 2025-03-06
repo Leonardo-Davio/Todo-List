@@ -4,17 +4,23 @@
 
 #include "Gui.h"
 #include <limits>
+#include <dirent.h>
+#include <sstream>
 
-
-// Display of the menu for the choose operation
-int Gui::menuDisplay() {
+int menuDisplay() {
     int num;
     cout << "\n---- Menu Todo List ----";
-    cout << "\n1. Mostra lista\n2. Aggiungi compito\n3. Compito comletato\n4. Rimuovi compito\n5. Uscita dal programma";
-    cout << "\nScegliere l'operazione:";
+    cout << "\n1. Mostra lista"
+            "\n2. Aggiungi compito"
+            "\n3. Rimuovi compito"
+            "\n4. Imposta compito completato"
+            "\n5. Eliminazione della lista"
+            "\n6. Cambia lista"
+            "\n7. Uscita dal programma"
+            "\nScegliere l'operazione:";
     cin >> num;
     // Check if the num is correct if not call again the function
-    if (num < 1 || num > 5 || cin.fail()){
+    if (num < 1 || num > 8 || cin.fail()){
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "L'inserimento non e' andato a buon fine, ritenta.\n";
@@ -23,33 +29,31 @@ int Gui::menuDisplay() {
     return num;
 }
 
-// Display of the all task to do
-void Gui::tasksDisplay(TodoList &list) {
-    // Initialise the local variable
-    const vector <Task>& tasks = list.getList();
-    int num = 1;
+void tasksDisplay(TodoList &list) {
 
-    // Display in the terminal
     cout << "\n----- Compiti da fare -----\n";
-    if (tasks.empty()){
-        cout << "La lista e' vuota.\n";
+
+    if(list.taskCount() == 0){
+        cout << "La lista " << list.getListName() << " non contiene nessun compito.\n";
         return;
     }
-    for(const auto &task: tasks){
-        cout << num << " |";
-        if (task.getIsCompleted()) { //Check if the task is completed or not
-            cout << "  Fatto  | ";
+
+    cout << "-- " << list.getListName() << endl;
+    for(size_t i = 0; i < list.taskCount(); i++){
+        Task task = list.getTask(i);
+        cout << i+1 << " | " << task.getDescription();
+        if(task.getIsCompleted()){
+            cout << " [Completato]\n";
         }else{
-            cout << " Da fare | ";
+            cout << " [Da completare]\n";
         }
-        cout << task.getDescription() << "\n";
-        num++;  // Update the index
     }
+
+    cout << "\nHa da completare " << list.taskCount() - list.taskDoneCount()
+         << " attivita' su " << list.taskCount() << ".\n";
 }
 
-
-// Display for add a new task on the list
-void Gui::addTaskDisplay(TodoList &list) {
+void addTaskDisplay(TodoList &list) {
     // Initialise the local variable
     string word;
     string descriptionTask;
@@ -70,83 +74,247 @@ void Gui::addTaskDisplay(TodoList &list) {
         }
     }
     if (!descriptionTask.empty()) { // Check if the descriptionTAsk is empty and add to the list
-        list.addTask(descriptionTask);
+        Task task(descriptionTask);
+        list.addTask(task);
     } else {    // Error on the insert
         cout << "Inserimento non e' andato a buon fine.\nRitorno al menu principale";
     }
 }
 
-// Display for remove the task from the list
-void Gui::removeTaskDisplay(TodoList &list) {
+void removeTaskDisplay(TodoList &list) {
     // Initialise the local variable
-    int index;
-    string check;
+    int index, op;
+    string check, word, descriptionTask;
     // Display for select the task to remove
     cout << "\n----- Rimozione di un compito -----\n";
-    cout << "Inserisci il numero del compito da voler rimuovere: ";
-    cin >> index;
-    index--;   //The value taken from user start with 1, the list start with 0
-    try {   //Try that index value is correct to remove the task
-        Task task = list.getTask(index);
-        cout << "\nStai eliminando il compito: \"" <<task.getDescription();
-        cout << "\"\n[Y|N]->";
-        cin >> check;   // Confirm the remove the task
-        if( check == "Y"|| check == "y"){
-            list.removeTask(index);
-            cout << "\n--Il compito e' stato eliminato con successo!\n";
-        } else{
-            cout << "\n--Il compito non e' stato eliminato.\n";
-        }
-    } catch (const std::out_of_range& e) {  // Error lunch if the value is not well define.
-        cout << "\nIl numero inserito non e' nella lista!\n";
-    }
-}
+    cout << "Inserisca il numero dell'operazione da svoglere.\n"
+            "1. Rimozione attivita' in base all'indice.\n"
+            "2. Rimozione attivita' in base alla descrizione.\n"
+            "3. Annullamento dell'opreazione.\n"
+            "Operazione scelta: ";
+    cin >> op;
+    // Check if the num is correct if not call again the function
+    switch (op) {
+        case 3:
+            return;
 
-void Gui::completeTaskDisplay(TodoList &list) {
-    // Initialise the local variable
-    int index;
-    string check;
-    bool status;
-    //Display for set the task is completed
-    cout << "\n----- Compito completato -----\n";
-    cout << "Inserisci il numero del compito da segnare come completato/da fare: ";
-    cin >> index;
-    index--;
-
-    try {   // Try if the index value is valid to operate
-        Task task = list.getTask(index);
-        // Display witch task is to complete or for completing
-        cout << "\nIl compito " << task.getDescription();
-        if ((status = task.getIsCompleted())){
-            cout << " lo stai impostando da completare. ";
-        }else{
-            cout << " lo hai completato.";
-        }
-        // Display the confirm of the operation
-        cout << "\nConfermi l'operazione\n[Y|N] -> ";
-        cin >> check;
-        if( check == "Y"|| check == "y"){
-            cout << "\n--Il compito e' ";
-            if (status){
-                status = false;
-                cout << "da completare.\n";
-            }else{
-                status = true;
-                cout << "completato.\n";
+        case 1:
+            cout << "\nE' stato scelto la rimozione con l'indice.\n"
+                    "Inserisca l'indice: ";
+            cin >> index;
+            index--;
+            try {
+                Task task = list.getTask(index);
+                cout << "--Sai elimando l'attivita': " << task.getDescription() << endl;
+                cout << "Conferma? [Y|N]->";
+                cin >> check;
+                if (check == "Y" || check == "y") {
+                    list.removeTask(index);
+                    cout << "\n--Il compito e' stato eliminato con successo!\n";
+                } else {
+                    cout << "\n--Il compito non e' stato eliminato.\n";
+                }
             }
-            list.setCompleteTask(index, status);
-        } else{
-            cout << "\n--Il compito non e' stato modificato.\n";
+            catch (out_of_range &e) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << endl << e.what() << endl;
+            }
+            cout << "Ritorno al menu principale.\n";
+            return;
+
+        case 2: {
+            cout << "\nE' stato scleto la rimozione con descrizione.\n"
+                    "Inserisca la descrizione completa dell'attivita' da eliminare:\n";
+            cin >> std::ws; // Ignore the first blank space.
+            // Is it possible to use the get line for take the test but for some reason the google test do not like it.
+            // For this reason I use a custom insert for take the description for the new task.
+            while (cin >> word) {   // Creation of the description string
+                if (!descriptionTask.empty()) {
+                    descriptionTask += " ";
+                }
+                descriptionTask += word;
+                if (cin.peek() == '\n') {
+                    break;
+                }
+            }
+            vector<string> matchDesc = list.searchTaskByPartialDescription(descriptionTask);
+            if (matchDesc.empty()) {
+                cout << "\nNon esiste nessuna attivita' con la descrizione " << descriptionTask << endl;
+            } else {
+                if (matchDesc.size() != 1) {
+                    cout << "\nEsistono piu' attivita' con la descrizione immessa."
+                            "\nIndicare con un numero l'indice dell'attivta' da eliminare.";
+                    int i = 1;
+                    for (const auto &desc: matchDesc) {
+                        cout << endl << i << ". " << desc;
+                        i++;
+                    }
+                    cout << "\nIndice scelto: ";
+                    cin >> index;
+                    index--;
+                    if (index < 0 && index > matchDesc.size()) {
+                        cout << "\nIl valore inserito e' errato. Ritorno al memnu principale.\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        return;
+                    }
+                } else {
+                    index = 0;
+                }
+                try {
+                    Task task = list.getTaskByDescription(matchDesc[index]);
+                    cout << "--Sai elimando l'attivita': " << task.getDescription() << endl;
+                    cout << "Conferma? [Y|N]->";
+                    cin >> check;
+                    if (check == "Y" || check == "y") {
+                        list.removeTaskByDescription(descriptionTask);
+                        cout << "\n--Il compito e' stato eliminato con successo!\n";
+                    } else {
+                        cout << "\n--Il compito non e' stato eliminato.\n";
+                    }
+                }
+                catch (out_of_range &e) {
+                    cout << endl << e.what() << endl;
+                }
+            }
+            cout << "Ritorno al menu principale.\n";
+            return;
         }
-    } catch (const std::out_of_range& e) {  // Error lunch if the value is not well define.
-        cout << "\nIl numero inserito non e' nella lista!\n";
+
+        default:
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "L'inserimento non e' andato a buon fine, ritenta.\n";
+            removeTaskDisplay(list);
+            return;
     }
 }
 
-void Gui::exitProgram(TodoList &list, string &path) {
-    cout << "\nSalvataggio delle task sul file: " << path;
+void completeTaskDisplay(TodoList &list) {
+    // Initialise the local variable
+    int index, op;
+    string check, word, descriptionTask;
+    //Display for set the task is completed
+    cout << "\n----- Compito completato -----\n"
+            "Inserisca il numero dell'operazione da svolgere.\n"
+            "1. Completa l'attivita' attraverso l'indice.\n"
+            "2. Completa l'attivita' attraverso la descrizione.\n"
+            "3. Annullamento dell'opreazione.\n"
+            "Operazione scelta: ";
+    cin >> op;
+    switch (op) {
+        case 3:
+            return;
+
+        case 1:
+            cout << "\nE' stato la scelto l'opreazione completa attivita' in base all'indice.\n"
+                    "Inserisca ora l'indice dell'attivita' da completare: ";
+            cin >> index;
+            try {
+                index--;
+                Task &task = list.getTask(index);
+                supportCompleteTaskDisplay(task);
+                return;
+            }
+            catch (out_of_range &e) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << endl << e.what() << endl;
+            }
+
+        case 2:{
+            cout << "\nE' stato la scelto l'opreazione completa attivita' in base alla descrizione.\n"
+                    "Inserisca la descrizione completa dell'attivita' da completare:\n ";
+            cin >> ws;
+            while (cin >> word) {
+                if (!descriptionTask.empty()) {
+                    descriptionTask += " ";
+                }
+                descriptionTask += word;
+                if (cin.peek() == '\n') {
+                    break;
+                }
+            }
+            vector<string> matchDesc = list.searchTaskByPartialDescription(descriptionTask);
+            if (matchDesc.empty()) {
+                cout << "\nNon esiste nessuna attivita' con la descrizione " << descriptionTask << endl;
+            } else {
+                if (matchDesc.size() != 1) {
+                    cout << "\nEsistono piu' attivita' con la descrizione immessa."
+                            "\nIndicare con un numero l'indice dell'attivta' da eliminare.";
+                    int i = 1;
+                    for (const auto &desc: matchDesc) {
+                        cout << endl << i << ". " << desc;
+                        i++;
+                    }
+                    cout << "\nIndice scelto: ";
+                    cin >> index;
+                    index--;
+                    if (index < 0 && index > matchDesc.size()) {
+                        cout << "\nIl valore inserito e' errato. Ritorno al memnu principale.\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        return;
+                    }
+                } else {
+                    index = 0;
+                }
+                try {
+                    Task &task = list.getTaskByDescription(matchDesc[index]);
+                    supportCompleteTaskDisplay(task);
+                    return;
+                }
+                catch (out_of_range &e) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << endl << e.what() << endl;
+                    return;
+                }
+            }
+        }
+
+        default:
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "L'inserimento non e' andato a buon fine, ritenta.\n";
+            completeTaskDisplay(list);
+            return;
+    }
+}
+void supportCompleteTaskDisplay(Task &task){
+    string check;
+    cout << "\nStai completando l'atttivita': " << task.getDescription()<< endl;
+    if (task.getIsCompleted()){
+        cout << "L'attivita' scelta e' completata. "
+                "Stai quindi impostando l'attivita': Da completare.\n"
+                "Confermi la scelta [Y|N] ->";
+        cin >> check;
+        if (check == "y" || check == "Y"){
+            cout << "\nL'attivita' e' stata impostatata: Da completare.\n";
+            task.setIsCompleted(false);
+        }else{
+            cout << "\nOperazione annullata!\n";
+        }
+    }else{
+        cout << "L'attivita' scelta e' da completare. "
+                "Stai quindi impostando l'attivita': Completata.\n"
+                "Confermi la scelta [Y|N] ->";
+        cin >> check;
+        if (check == "y" || check == "Y"){
+            cout << "\nL'attivita' e' stata impostatata: Completata.\n";
+            task.setIsCompleted(true);
+        }else{
+            cout << "\nOperazione annullata!\n";
+        }
+    }
+    cout << "Ritorno al menu principale.\n";
+}
+
+void exitProgram(TodoList &list) {
+    cout << "\nSalvataggio delle task sul file: " << list.getListName() <<".txt";
     try{
-        list.saveTasks(path);
+        list.saveListOnDisk();
         cout << "\nSalvataggio effettuato. Chiusura del programma, arrivederci.";
     } catch (const out_of_range &e){
         cout << "\nERROR on save: the filepath is null or not defined.\nThe program is closing anyway.";
@@ -154,3 +322,91 @@ void Gui::exitProgram(TodoList &list, string &path) {
 
 }
 
+void listSelect(TodoList &list){
+    string text;
+    bool found = false;
+    cout << "Liste attivita' salvate: \n";
+    vector<string> listName = listNameInFolder(list);
+    for (const auto &itr : listName ){
+        cout << "- " <<itr << endl;
+    }
+    cout << "Digiti il nome della lista da usare. Scriva new per creare una nuova lista\n"
+            "Lista: ";
+    cin >> text;
+    if(text == "new"){
+        cout << "\nInserica il nome della lista che vorrebbe inserire: ";
+        cin.clear();
+        cin >> text;
+        list.setListName(text);
+        return;
+    }
+    for(const auto &itr : listName) {
+        if( itr == text){
+            found = true;
+            list.setListName(text);
+            break;
+        }
+    }
+    if(!found){
+        cout << "Il nome della lista inserito non è valido. Ritenta o crea una nuova.\n";
+        listSelect(list);
+        return;
+    }
+    try{
+        list.insertTaskOnList();
+    }
+    catch (const out_of_range &e){
+        cout << "Attenzione: " << e.what() << list.getListName() <<".\n";
+    }
+}
+
+vector<string> listNameInFolder(TodoList &list){
+    vector<string> fileName;
+    DIR *dir = opendir(list.getPathFolder().c_str());
+    if (dir) {
+        dirent *entry;
+        while ((entry = readdir(dir)) != nullptr) {
+            string name = entry->d_name;
+            if (name.size() > 4 && name.substr(name.size() - 4) == ".txt") {
+                name.erase(name.length()-4);
+                fileName.push_back(name);
+            }
+        }
+        closedir(dir);
+    } else {
+        throw out_of_range("La cartella non contiene nessun file.");
+    }
+    return fileName;
+}
+
+bool deleteList(TodoList &list){
+    string check;
+    cout << "\n---- Eliminazione della lista ----\n"
+            "Stai eliminando la lista di nome: " << list.getListName() <<
+            "\nConferma la scelta, non sara' possibile ripristinare dopo la conferma\n"
+            "Conferma [Y|N]->";
+    cin >> check;
+    if (check == "y" || check == "Y"){
+        if(list.delListOnDisk()){
+            cout << "\nLa lista " << list.getListName() << " e' stata eliminata con successo!";
+            list.clearList();
+            return true;
+        }else{
+            cout << "\nLa lista " << list.getListName() << " non e' stata eliminata.\n"
+                     "Ritorno al menu principale.\n";
+            return false;
+        }
+    }else{
+        cout << "\nL'operazione e' stata annullata.\nRitorno al menu principale.\n";
+        return false;
+    }
+}
+bool contAfterDel(){
+    string check;
+    cout << "\nChiudere il programma?\n[Y|N] ->";
+    cin >> check;
+    if(check == "y" || check == "N"){
+        return false;
+    }
+    return true;
+}

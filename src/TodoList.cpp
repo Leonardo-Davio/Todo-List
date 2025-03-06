@@ -3,62 +3,82 @@
 //
 
 #include "TodoList.h"
-#include <fstream>  //Lib for work with the external file
+#include <dirent.h>
 #include <sstream>
+#include <cstdio>
 
-TodoList::TodoList(const vector<Task> &list, string &filepath): _list(list) {
-    loadTasks(filepath);
+void TodoList::addTask(Task &task) {
+    list.push_back(task);
 }
 
-//Methods for interacting with Task objects inside the _list vector.
-void TodoList::addTask(const string &description) {
-    Task task(description);
-    _list.push_back(task);
-}
-
-void TodoList::setTaskDescription(int index, string &description) {
-    if (index < 0 || index >= _list.size()) {
-        throw out_of_range("Index out of range on setTaskDescription");
+Task &TodoList::getTask(size_t index) {
+    if (index < list.size()) {
+        return list[index];
     }
-    _list[index].setDescription(description);
+    throw out_of_range("Task at index " + to_string(index) + " not found.");
 }
 
-void TodoList::setCompleteTask(int index, bool complete) {
-    if (index < 0 || index >= _list.size()) {
-        throw out_of_range("Index out of range on setCompleteTask");
+bool TodoList::removeTask(int index) {
+    if (index < list.size() || index < 0) {
+        list.erase(list.begin() + index);
+        return true;
     }
-    _list[index].setIsCompleted(complete);
+    return false;
 }
 
-//Methods for interacting with the _list vector
-void TodoList::removeTask(int index) {
-    if (index < 0 || index >= _list.size()) {
-        throw out_of_range("Index out of range on removeTask()");
+Task& TodoList::getTaskByDescription(const string &desc) {
+    for (auto& task : list) {
+        if (task.getDescription() == desc) {
+            return task;
+        }
     }
-    _list.erase(_list.begin() + index);
+    throw out_of_range("Attivita' con descrizione " + desc + " non e' stata trovata.");
 }
 
-Task TodoList::getTask(int index) {
-    if (_list.empty() || index < 0 || index >= _list.size()) {
-        throw out_of_range("Index out of range on getTask()");
+bool TodoList::removeTaskByDescription(const string &desc) {
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if (it->getDescription() == desc) {
+            list.erase(it);
+            return true;
+        }
     }
-    return _list[index];
+    return false;
 }
 
-//Methods to save Tasks to disk or unload them from disk to the _list vector
-void TodoList::loadTasks(const string &filepath) {
-    ifstream file(filepath);
+void TodoList::setListName(const string &name) {
+    listName = name;
+}
+
+const string &TodoList::getListName() const {
+    return listName;
+}
+
+size_t TodoList::taskCount() {
+    return list.size();
+}
+
+int TodoList::taskDoneCount() {
+    int count = 0 ;
+    for ( const auto& task: list ){
+        if (task.getIsCompleted()){
+            count++;
+        }
+    }
+    return count;
+}
+
+void TodoList::insertTaskOnList() {
+    string listNameFile = pathFolder+listName+".txt";
+    ifstream file(listNameFile);
     // Check if the file exist
     if (!file) {
-        cerr << "Errore: impossibile aprire il file " << filepath << endl;
-        return;
+        throw out_of_range("Errore: impossibile aprire il file "+listName);
     }
     // Check if the file is empty
     file.seekg(0, ios::end);
     if (file.tellg() == 0) {
-        cout << "-- Non ci sono compiti salvati sul disco --\n";
         file.close();
-        return;
+        throw  out_of_range("\n-- Non ci sono compiti salvati sul file --\n");
     }
     // Return the pointer to the origin and upload the task saved.
     file.seekg(0, ios::beg);
@@ -68,24 +88,44 @@ void TodoList::loadTasks(const string &filepath) {
         string description, completeStr;
         if (getline(iss, description, ';')&&getline(iss, completeStr)) {
             bool completed = (completeStr == "1");
-            _list.emplace_back(description, completed);
+            Task task(description,completed);
+            addTask(task);
         }
     }
     file.close();
 }
 
-void TodoList::saveTasks(const string &filepath) const {
-    ofstream file(filepath);
-    if (!file.is_open()){
-        throw out_of_range("Impossible to open the file on saveTask()");
+void TodoList::saveListOnDisk() {
+    string listNameFile = pathFolder+listName+".txt";
+    ofstream file(listNameFile);
+    if(!file.is_open()){
+        throw out_of_range("Impossible to open the file for saving the list");
     }
-    file << "";   // Clear the file for the new save of the todolist
-    for (const auto &task: _list) {
-        file << task.getDescription() << ";" << task.getIsCompleted() << "\n";
+    file << "";
+    for(auto & itr : list){
+        file << itr.getDescription() << ";" << itr.getIsCompleted() << endl;
     }
     file.close();
 }
 
-const vector<Task> &TodoList::getList() {
-    return _list;
+bool TodoList::delListOnDisk() {
+    string listNameFile = pathFolder+listName+".txt";
+    if (remove(listNameFile.c_str()) == 0){
+        return true;
+    }
+    return false;
+}
+
+const string &TodoList::getPathFolder() const {
+    return pathFolder;
+}
+
+vector<string> TodoList::searchTaskByPartialDescription(const string &desc) const{
+    vector<string> matchDesc;
+    for (const auto &task : list){
+        if (task.getDescription().find(desc) != string::npos){
+            matchDesc.push_back(task.getDescription());
+        }
+    }
+    return matchDesc;
 }

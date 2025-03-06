@@ -1,3 +1,4 @@
 Andare a compreare il pane;0
-Fare un po' di palestra;1
+Fare un po' di palestra;0
 Pulire il soggiorno;1
+pere;1

@@ -5,33 +5,53 @@
 
 int main() {
     // Initialise the program
-    string filepath = "../../src/tasks.txt";  //Change here for a different disc file folder src, not cmake folder
-    vector<Task> tasks;
-    TodoList list(tasks, filepath);
+    TodoList list("");
+    cout << "------ Benvenuto nel programma Todo List ------\n";
+    listSelect(list);
+
     int opMenu; // Variable that manage the value from the menuDisplay
 
     //Start the main program
     while(true){
-        opMenu = Gui::menuDisplay();
+        opMenu = menuDisplay();
         switch(opMenu){
             case 1:
-                Gui::tasksDisplay(list);
+                tasksDisplay(list);
                 break;
             case 2:
-                Gui::addTaskDisplay(list);
+                addTaskDisplay(list);
                 break;
             case 3:
-                Gui::completeTaskDisplay(list);
+                removeTaskDisplay(list);
                 break;
             case 4:
-                Gui::removeTaskDisplay(list);
+                completeTaskDisplay(list);
                 break;
+
             case 5:
-                Gui::exitProgram(list, filepath);
+                if( deleteList(list)){
+                    if(contAfterDel()){
+                        cout << "\n---- Cambio della lista ----\n";
+                        listSelect(list);
+                        break;
+                    }else{
+                        return 0;
+                    }
+                }
+                break;
+
+            case 6:
+                list.saveListOnDisk();
+                cout << "\n---- Cambio della lista ----\n";
+                listSelect(list);
+                break;
+
+            case 7:
+                exitProgram(list);
                 return 0;
 
             default:
-                cout << "\nERROR opMenu: value is not well define.";
+                cerr << "\nERROR opMenu: value is not well define.";
                 return 1;
         }
     }

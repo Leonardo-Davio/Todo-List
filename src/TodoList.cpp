@@ -78,7 +78,7 @@ void TodoList::insertTaskOnList() {
     file.seekg(0, ios::end);
     if (file.tellg() == 0) {
         file.close();
-        throw  out_of_range("\n-- Non ci sono compiti salvati sul file --\n");
+        throw out_of_range("Non ci sono compiti salvati sul file");
     }
     // Return the pointer to the origin and upload the task saved.
     file.seekg(0, ios::beg);
@@ -97,6 +97,9 @@ void TodoList::insertTaskOnList() {
 
 void TodoList::saveListOnDisk() {
     string listNameFile = pathFolder+listName+".txt";
+    if (listName.empty()){
+        throw out_of_range("Impossible to open the file for saving the list");
+    }
     ofstream file(listNameFile);
     if(!file.is_open()){
         throw out_of_range("Impossible to open the file for saving the list");

@@ -394,7 +394,7 @@ TEST(ListSelectTest, InvalidListSelectionRetry) {
 
     std::cout.rdbuf(oldCoutBuf);
     EXPECT_EQ(todoList.getListName(), "TEST");
-    EXPECT_TRUE(output.str().find("Il nome della lista inserito non è valido. Ritenta o crea una nuova.") != std::string::npos);
+    EXPECT_TRUE(output.str().find("Il nome della lista inserito non e' valido. Ritenta o crea una nuova.") != std::string::npos);
 
     std::remove("TEST.txt");  // Clean up
 }
@@ -485,7 +485,7 @@ TEST(DeleteListTest, DeleteFailure) {
 }
 
 
-// Test function for contaferDel
+// Test function for contAferDel [Continue After Delete the list]
 TEST(ContAfterDelTest, HandlesYesInput) {
     std::istringstream input("y\n");
     std::cin.rdbuf(input.rdbuf());

@@ -348,7 +348,7 @@ void listSelect(TodoList &list){
         }
     }
     if(!found){
-        cout << "Il nome della lista inserito non è valido. Ritenta o crea una nuova.\n";
+        cout << "Il nome della lista inserito non e' valido. Ritenta o crea una nuova.\n";
         listSelect(list);
         return;
     }

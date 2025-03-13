@@ -109,6 +109,7 @@ void TodoList::saveListOnDisk() {
         file << itr.getDescription() << ";" << itr.getIsCompleted() << endl;
     }
     file.close();
+    list.clear();
 }
 
 bool TodoList::delListOnDisk() {

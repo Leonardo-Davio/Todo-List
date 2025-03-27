@@ -347,7 +347,7 @@ TEST(ListSelectTest, ValidListSelection) {
 TEST(ListSelectTest, ValidEmptyListSelection) {
     // This test verifies that a valid list name, but in the file there isn't any Task
     TodoList todoList("");
-    std::ofstream("../../src/tasksFolder/TEST.txt");
+    std::ofstream("./tasksFolder/TEST.txt");
 
     std::istringstream input("TEST\n");
     std::ostringstream output;
@@ -404,8 +404,8 @@ TEST(ListSelectTest, InvalidListSelectionRetry) {
 TEST(ListNameInFolderTest, RetrieveFileNames) {
     // This test verifies that the function retrieves the correct list names from the folder
     TodoList todoList("");
-    std::ofstream("../../src/tasksFolder/TEST1.txt");
-    std::ofstream("../../src/tasksFolder/TEST2.txt");
+    std::ofstream("./tasksFolder/TEST1.txt");
+    std::ofstream("./tasksFolder/TEST2.txt");
 
     std::vector<std::string> fileNames = listNameInFolder(todoList);
     bool foundTest1 = false;
@@ -422,8 +422,8 @@ TEST(ListNameInFolderTest, RetrieveFileNames) {
     EXPECT_TRUE(foundTest1);
     EXPECT_TRUE(foundTest2);
 
-    std::remove("../../src/tasksFolder/TEST1.txt");
-    std::remove("../../src/tasksFolder/TEST2.txt");
+    std::remove("./tasksFolder/TEST1.txt");
+    std::remove("./tasksFolder/TEST2.txt");
 }
 
 
@@ -432,7 +432,7 @@ TEST(DeleteListTest, ConfirmDelete) {
     // This test verifies that the list is deleted when the user confirms
     TodoList todoList("");
     todoList.setListName("TEST");
-    std::ofstream("../../src/tasksFolder/TEST.txt"); // Crea un file di test nel percorso specificato
+    std::ofstream("./tasksFolder/TEST.txt");
 
     std::istringstream input("Y\n");
     std::ostringstream output;
@@ -444,14 +444,14 @@ TEST(DeleteListTest, ConfirmDelete) {
     std::cout.rdbuf(oldCoutBuf);
     EXPECT_TRUE(result);
     EXPECT_TRUE(output.str().find("La lista TEST e' stata eliminata con successo!") != std::string::npos);
-    EXPECT_FALSE(std::ifstream("../../src/tasksFolder/TEST.txt")); // Verifica che il file non esista più
+    EXPECT_FALSE(std::ifstream("./tasksFolder/TEST.txt")); // Verify that the file no longer exists
 }
 
 TEST(DeleteListTest, CancelDelete) {
     // This test verifies that the list is not deleted when the user cancels
-    TodoList todoList("../../src/tasksFolder");
+    TodoList todoList("./tasksFolder");
     todoList.setListName("TEST");
-    std::ofstream("../../src/tasksFolder/TEST.txt"); // Crea un file di test nel percorso specificato
+    std::ofstream("./tasksFolder/TEST.txt"); // Create a test file
 
     std::istringstream input("N\n");
     std::ostringstream output;
@@ -463,8 +463,8 @@ TEST(DeleteListTest, CancelDelete) {
     std::cout.rdbuf(oldCoutBuf);
     EXPECT_FALSE(result);
     EXPECT_TRUE(output.str().find("L'operazione e' stata annullata.\nRitorno al menu principale.") != std::string::npos);
-    EXPECT_TRUE(std::ifstream("../../src/tasksFolder/TEST.txt")); // Verifica che il file esista ancora
-    std::remove("../../src/tasksFolder/TEST.txt"); // Pulizia
+    EXPECT_TRUE(std::ifstream("./tasksFolder/TEST.txt")); // Verify that the file still exists
+    std::remove("./tasksFolder/TEST.txt");
 }
 
 TEST(DeleteListTest, DeleteFailure) {

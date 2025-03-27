@@ -26,7 +26,7 @@ bool TodoList::removeTask(int index) {
     return false;
 }
 
-Task& TodoList::getTaskByDescription(const string &desc) {
+Task& TodoList::getTask(const string &desc) {
     for (auto& task : list) {
         if (task.getDescription() == desc) {
             return task;
@@ -35,7 +35,7 @@ Task& TodoList::getTaskByDescription(const string &desc) {
     throw out_of_range("Attivita' con descrizione " + desc + " non e' stata trovata.");
 }
 
-bool TodoList::removeTaskByDescription(const string &desc) {
+bool TodoList::removeTask(const string &desc) {
     for (auto it = list.begin(); it != list.end(); ++it) {
         if (it->getDescription() == desc) {
             list.erase(it);
@@ -57,8 +57,8 @@ size_t TodoList::taskCount() {
     return list.size();
 }
 
-int TodoList::taskDoneCount() {
-    int count = 0 ;
+size_t TodoList::taskDoneCount() {
+    size_t count = 0 ;
     for ( const auto& task: list ){
         if (task.getIsCompleted()){
             count++;
@@ -67,7 +67,7 @@ int TodoList::taskDoneCount() {
     return count;
 }
 
-void TodoList::insertTaskOnList() {
+void TodoList::loadTask() {
     string listNameFile = pathFolder+listName+".txt";
     ifstream file(listNameFile);
     // Check if the file exist
@@ -95,7 +95,7 @@ void TodoList::insertTaskOnList() {
     file.close();
 }
 
-void TodoList::saveListOnDisk() {
+void TodoList::saveTask() {
     string listNameFile = pathFolder+listName+".txt";
     if (listName.empty()){
         throw out_of_range("Impossible to open the file for saving the list");

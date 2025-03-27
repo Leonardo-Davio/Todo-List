@@ -16,7 +16,8 @@ class TodoList{
 private:
     vector<Task> list;
     string listName;
-    const string pathFolder = "../../src/tasksFolder/";   //Default value
+    const string pathFolder = "./tasksFolder/";   //Default value
+    //Remember working directory "$ProjectFileDir$"
 
 public:
     // Builder
@@ -33,8 +34,8 @@ public:
     bool removeTask(int index);
 
     // Get and remove task by description
-    Task &getTaskByDescription(const string &desc);
-    bool removeTaskByDescription(const string &desc);
+    Task &getTask(const string &desc);
+    bool removeTask(const string &desc);
     // Return task description with a partial description
     vector<string> searchTaskByPartialDescription(const string &desc) const;
 
@@ -44,24 +45,15 @@ public:
 
     // Methods for counting the quantity of vector and tasks completed
     size_t taskCount();
-    int taskDoneCount();
+    size_t taskDoneCount();
 
     // Methods for load and save the tasks on the disk
-    void insertTaskOnList();
-    void saveListOnDisk();
-    bool delListOnDisk();
+    void saveTask();        // Save Task on the disk
+    bool delListOnDisk();   // Remove the task from disk
+    void loadTask();        // Load Task from the disk
 
     // Get pathFolder
     const string &getPathFolder() const;
-
-    /*Comments
-     * addTask()override [DONE]
-     * void removeTask() return bool [Done]
-     * searchTask by description [Done] but need all description not a part of descrition
-     * searchTask by part of description [done]
-     * taskCount(), taskDoneCount() [Done]
-     * loadtask(), savetask attribute [Done]
-    */
 };
 
 

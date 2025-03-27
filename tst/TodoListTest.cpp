@@ -70,37 +70,37 @@ TEST(TodoListTest, RemoveTaskInvalidIndex) {
 }
 
 // Task using description for get, delete and search with partial desc
-// Test for getTaskByDescription function
+// Test for getTask function
 TEST(TodoListTest, GetTaskByDescription) {
     TodoList todoList("");
     Task task("Task 1", false);
     todoList.addTask(task);
-    Task& retrievedTask = todoList.getTaskByDescription("Task 1");
+    Task& retrievedTask = todoList.getTask("Task 1");
     ASSERT_EQ(retrievedTask.getDescription(), "Task 1");
 }
 
-// Test for exception in getTaskByDescription function
+// Test for exception in getTask function
 TEST(TodoListTest, GetTaskByDescriptionException) {
     TodoList todoList("");
-    EXPECT_THROW(todoList.getTaskByDescription("Task 1"), std::out_of_range);
+    EXPECT_THROW(todoList.getTask("Task 1"), std::out_of_range);
 }
 
-// Test for removeTaskByDescription function
+// Test for removeTask function
 TEST(TodoListTest, RemoveTaskByDescription) {
     TodoList todoList("");
     Task task("Task 1", false);
     todoList.addTask(task);
-    bool removed = todoList.removeTaskByDescription("Task 1");
+    bool removed = todoList.removeTask("Task 1");
     ASSERT_TRUE(removed);
     ASSERT_EQ(todoList.taskCount(), 0);
 }
 
-// Test for removeTaskByDescription function with invalid description
+// Test for removeTask function with invalid description
 TEST(TodoListTest, RemoveTaskByDescriptionInvalid) {
     TodoList todoList("");
     Task task("Task 1", false);
     todoList.addTask(task);
-    bool removed = todoList.removeTaskByDescription("Task 2");
+    bool removed = todoList.removeTask("Task 2");
     ASSERT_FALSE(removed);
 }
 
@@ -159,19 +159,19 @@ TEST(TodoListTest, TaskDoneCount) {
 
 // methods for lad and save tasks on disk
 // Test for insertTaskOnList function
-TEST(TodoListTest, InsertTaskOnList) {
+TEST(TodoListTest, LoadTask) {
     TodoList todoList("");
     todoList.setListName("MyTasks");
-    EXPECT_THROW(todoList.insertTaskOnList(), std::out_of_range);
+    EXPECT_THROW(todoList.loadTask(), std::out_of_range);
 }
 
-// Test for saveListOnDisk function
-TEST(TodoListTest, SaveListOnDisk) {
+// Test for saveTask function
+TEST(TodoListTest, SaveTaks) {
     TodoList todoList("");
     Task task("Task 1", false);
     todoList.addTask(task);
     todoList.setListName("MyTasks");
-    EXPECT_NO_THROW(todoList.saveListOnDisk());
+    EXPECT_NO_THROW(todoList.saveTask());
 
     // Check if the file is created and contains the correct data
     std::ifstream file(todoList.getPathFolder() + "MyTasks.txt");
@@ -187,7 +187,7 @@ TEST(TodoListTest, SaveListOnDisk) {
 TEST(TodoListTest, DelListOnDisk) {
     TodoList todoList("");
     todoList.setListName("MyTasks");
-    todoList.saveListOnDisk(); // Ensure the file is created
+    todoList.saveTask(); // Ensure the file is created
 
     // Check if the file is deleted successfully
     EXPECT_TRUE(todoList.delListOnDisk());
@@ -201,5 +201,5 @@ TEST(TodoListTest, DelListOnDisk) {
 // Test for getPathFolder function
 TEST(TodoListTest, GetPathFolder) {
     TodoList todoList("");
-    ASSERT_EQ(todoList.getPathFolder(), "../../src/tasksFolder/");
+    ASSERT_EQ(todoList.getPathFolder(), "./tasksFolder/");
 }

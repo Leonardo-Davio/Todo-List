@@ -41,7 +41,7 @@ int main() {
                 break;
 
             case 6:
-                list.saveListOnDisk();
+                list.saveTask();
                 cout << "\n---- Cambio della lista ----\n";
                 listSelect(list);
                 break;

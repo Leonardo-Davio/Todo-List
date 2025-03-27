@@ -163,12 +163,12 @@ void removeTaskDisplay(TodoList &list) {
                     index = 0;
                 }
                 try {
-                    Task task = list.getTaskByDescription(matchDesc[index]);
+                    Task task = list.getTask(matchDesc[index]);
                     cout << "--Sai elimando l'attivita': " << task.getDescription() << endl;
                     cout << "Conferma? [Y|N]->";
                     cin >> check;
                     if (check == "Y" || check == "y") {
-                        list.removeTaskByDescription(descriptionTask);
+                        list.removeTask(descriptionTask);
                         cout << "\n--Il compito e' stato eliminato con successo!\n";
                     } else {
                         cout << "\n--Il compito non e' stato eliminato.\n";
@@ -261,7 +261,7 @@ void completeTaskDisplay(TodoList &list) {
                     index = 0;
                 }
                 try {
-                    Task &task = list.getTaskByDescription(matchDesc[index]);
+                    Task &task = list.getTask(matchDesc[index]);
                     supportCompleteTaskDisplay(task);
                     return;
                 }
@@ -314,7 +314,7 @@ void supportCompleteTaskDisplay(Task &task){
 void exitProgram(TodoList &list) {
     cout << "\nSalvataggio delle task sul file: " << list.getListName() <<".txt";
     try{
-        list.saveListOnDisk();
+        list.saveTask();
         cout << "\nSalvataggio effettuato. Chiusura del programma, arrivederci.";
     } catch (const out_of_range &e){
         cout << "\nERROR on save: the filepath is null or not defined.\nThe program is closing anyway.";
@@ -353,7 +353,7 @@ void listSelect(TodoList &list){
         return;
     }
     try{
-        list.insertTaskOnList();
+        list.loadTask();
     }
     catch (const out_of_range &e){
         cout << "Attenzione: " << e.what() << list.getListName() <<".\n";
